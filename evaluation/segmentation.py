@@ -13,6 +13,7 @@ import numpy as np
 import torch
 import tqdm
 from sklearn.metrics import average_precision_score
+from pathlib import Path
 
 from . import metrics, utils
 
@@ -218,11 +219,23 @@ def evaluate(
             save=save,
         )
 
+        save_tags = ['figure', 'im_tran', 'im_stat', 'im_pred', 'im_targ', 'mask_pred', 'mask_stat', 'mask_pers', 'im_pers', 'mask_tran']
+
         if save and do_visualise:
-            results_im = utils.plt_to_im(out["figure"])
-            os.makedirs(f"{save_dir}/per_sample", exist_ok=True)
-            path = f"{save_dir}/per_sample/{sample_id}.png"
-            plt.imsave(path, results_im)
+            for save_tag in save_tags:
+                if save_tag == 'figure':
+                    results_im = utils.plt_to_im(out[save_tag])
+                else:
+                    results_im = out[save_tag]
+                    if torch.is_tensor(results_im):
+                        results_im = results_im.cpu().numpy()
+                os.makedirs(f"{save_dir}/per_sample/{save_tag}", exist_ok=True)
+                path = f"{save_dir}/per_sample/{save_tag}/{sample_id:05d}.png"
+                # import pdb
+                # pdb.set_trace()
+                if save_tag != 'figure':
+                    results_im = np.clip(results_im, 0., 1.)
+                plt.imsave(path, results_im)
 
         mask_pred = out["mask_pred"]
 

@@ -1,0 +1,83 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Current File",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "train",
+            "type": "python",
+            "request": "launch",
+            "program": "train.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "--vid",
+                "kubric_single_car_rand_v2",
+                "--exp_name",
+                "rel/kubric_single_car_rand_v2",
+                "--train_ratio",
+                "1",
+                "--num_epochs",
+                "10",
+                "--suppress_person"
+            ]
+        },
+        {
+            "name": "eval_mask",
+            "type": "python",
+            "request": "launch",
+            "program": "evaluate.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "--path", 
+                "ckpts/rel/pick_drop/actor_fix_nf/epoch=9.ckpt", 
+                "--vid",
+                "pick_drop",
+                "--exp",
+                "rel",
+                "--exp_name",
+                "actor_fix_nf",
+                "--is_eval_script",
+                "--outputs",
+                "masks",
+                "--masks_n_samples",
+                "0",
+                "--summary_n_samples",
+                "0"
+            ]
+        },
+        {
+            "name": "eval_mask_epic",
+            "type": "python",
+            "request": "launch",
+            "program": "evaluate.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "--path", 
+                "ckpts/rel/P01_01/epoch=9.ckpt", 
+                "--vid",
+                "P01_01",
+                "--exp",
+                "rel",
+                "--is_eval_script",
+                "--outputs",
+                "masks",
+                "--masks_n_samples",
+                "0",
+                "--summary_n_samples",
+                "0"
+            ]
+        },
+    ]
+}

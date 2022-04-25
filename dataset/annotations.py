@@ -3,6 +3,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import PIL.Image
+from pathlib import Path
 
 
 def blend_mask(im, mask, colour, alpha, show_im=False):
@@ -37,11 +38,21 @@ class MaskLoader:
         image_id, image_ext = self.image_paths[sample_id].split(".")
 
         im = plt.imread(os.path.join(self.frames_dir, image_id + "." + image_ext))
-        mask = np.array(
-            PIL.Image.open(
-                os.path.join(self.annotations_dir, image_id + "." + image_ext)
+
+        if Path(os.path.join(self.annotations_dir, image_id + "." + image_ext)).exists():
+            mask = np.array(
+                PIL.Image.open(
+                    os.path.join(self.annotations_dir, image_id + "." + image_ext)
+                )
             )
-        )
+        else:
+            print(f'mask {os.path.join(self.annotations_dir, image_id + "." + image_ext)} not found!')
+            mask = np.ones_like(im)
+
+        if mask.ndim > 2:
+            mask = mask[...,0]
+        if mask.dtype != bool:
+            mask = mask > 0.5
 
         if self.is_debug:
             blend_mask(im, mask, self.mask_colour, self.mask_alpha, True)

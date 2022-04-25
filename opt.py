@@ -49,6 +49,9 @@ def get_opts(vid=None, root="data/EPIC-Diff"):
         "--N_a", type=int, default=48, help="Embedding size for appearance encoding."
     )
     parser.add_argument(
+        "--suppress_person", default=False, action="store_true", help="Disable actor component."
+    )
+    parser.add_argument(
         "--N_tau",
         type=int,
         default=17,

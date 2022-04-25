@@ -144,7 +144,8 @@ def render_rays(
                 person_sigmas = out[..., 12]
                 person_betas = out[..., 13]
 
-                if hp.inference and hp.suppress_person:
+                # if hp.inference and hp.suppress_person:
+                if hp.suppress_person:
                     # disables person during inference, e.g. for visualising videos
                     person_sigmas[:] = 0
 

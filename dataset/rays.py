@@ -32,6 +32,8 @@ class EPICDiff(Dataset):
         self.vid = vid
         self.img_w = 228
         self.img_h = 128
+        # self.img_w = 256
+        # self.img_h = 256
         self.split = split
         self.val_num = 1
         self.transform = torchvision.transforms.ToTensor()

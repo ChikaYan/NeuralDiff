@@ -17,6 +17,7 @@ def parse_args(path=None, vid=None, exp=None):
     parser.add_argument("--vid", type=str, default=vid, help="Video ID of dataset.")
 
     parser.add_argument("--exp", type=str, default=exp, help="Experiment name.")
+    parser.add_argument("--exp_name", type=str, default='', help="Additional experiment name.")
 
     parser.add_argument(
         "--outputs",
@@ -75,13 +76,17 @@ def init(args):
 def eval_masks(args, model, dataset, root):
     """Evaluate masks to produce mAP (and PSNR) scores."""
     root = os.path.join(root, "masks")
-    os.makedirs(root)
+    os.makedirs(root, exist_ok=True)
 
     maskloader = MaskLoader(dataset=dataset)
 
     image_ids = evaluation.utils.sample_linear(
         dataset.img_ids_test, args.masks_n_samples
     )[0]
+
+    mask, _ = maskloader[image_ids[0]]
+    dataset.img_w = mask.shape[1]
+    dataset.img_h = mask.shape[0]
 
     results = evaluation.evaluate(
         dataset,
@@ -99,7 +104,7 @@ def eval_masks_average(args):
     """Calculate average of `eval_masks` results for all 10 scenes."""
     scores = []
     for vid in VIDEO_IDS:
-        path_metrics = os.path.join("results", args.exp, vid, 'masks', 'metrics.txt')
+        path_metrics = os.path.join("results", args.exp, vid, args.exp_name, 'masks', 'metrics.txt')
         with open(f'results/rel/{vid}/masks/metrics.txt') as f:
             lines = f.readlines()
             score_map, score_psnr = [float(s) for s in lines[2].split('\t')[:2]]
@@ -156,5 +161,5 @@ if __name__ == "__main__":
         eval_masks_average(args)
     else:
         model, dataset = init(args)
-        root = os.path.join("results", args.exp, args.vid)
+        root = os.path.join("results", args.exp, args.vid, args.exp_name)
         run(args, model, dataset, root)
