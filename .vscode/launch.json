@@ -21,18 +21,22 @@
             "justMyCode": true,
             "args": [
                 "--vid",
-                "kubric_single_car_rand_v2",
+                "pick_drop",
                 "--exp_name",
-                "rel/kubric_single_car_rand_v2",
+                "rel/pick_drop/debug",
                 "--train_ratio",
                 "1",
                 "--num_epochs",
                 "10",
-                "--suppress_person"
+                "--suppress_person",
+                "--num_gpus",
+                "4",
+                "--num_workers",
+                "0"
             ]
         },
         {
-            "name": "eval_mask",
+            "name": "eval",
             "type": "python",
             "request": "launch",
             "program": "evaluate.py",
@@ -40,20 +44,21 @@
             "justMyCode": true,
             "args": [
                 "--path", 
-                "ckpts/rel/pick_drop/actor_fix_nf/epoch=9.ckpt", 
+                "ckpts/rel/kubric_multi_car_rand/long/last.ckpt", 
                 "--vid",
-                "pick_drop",
+                "kubric_multi_car_rand",
                 "--exp",
                 "rel",
                 "--exp_name",
-                "actor_fix_nf",
+                "long",
                 "--is_eval_script",
                 "--outputs",
                 "masks",
                 "--masks_n_samples",
                 "0",
                 "--summary_n_samples",
-                "0"
+                "0",
+                "--suppress_person"
             ]
         },
         {
@@ -77,6 +82,32 @@
                 "0",
                 "--summary_n_samples",
                 "0"
+            ]
+        },
+        {
+            "name": "eval_summary",
+            "type": "python",
+            "request": "launch",
+            "program": "evaluate.py",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args": [
+                "--path", 
+                "ckpts/rel/kubric_single_car_rand_v2_nsff/low_app/last.ckpt", 
+                "--vid",
+                "kubric_single_car_rand_v2_nsff",
+                "--exp",
+                "rel",
+                "--exp_name",
+                "low_app",
+                "--is_eval_script",
+                "--outputs",
+                "summary",
+                "--masks_n_samples",
+                "0",
+                "--summary_n_samples",
+                "0",
+                "--suppress_person",
             ]
         },
     ]

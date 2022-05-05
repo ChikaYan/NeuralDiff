@@ -98,7 +98,7 @@ class NeuralDiff(nn.Module):
                 x,
                 [
                     self.in_channels_xyz,
-                    self.in_channels_dir + self.in_channels_a,
+                    self.in_channels_dir + self.in_channels_a, # a: appearance
                     self.in_channels_t,
                     self.in_channels_xyz,
                 ],
@@ -119,7 +119,7 @@ class NeuralDiff(nn.Module):
         xyz_ = input_xyz
         for i in range(self.D):
             if i in self.skips:
-                xyz_ = torch.cat([input_xyz, xyz_], 1)
+                xyz_ = torch.cat([input_xyz, xyz_], 1) # prepare for skip connections?
             xyz_ = getattr(self, f"xyz_encoding_{i+1}")(xyz_)
 
         static_sigma = self.static_sigma(xyz_)

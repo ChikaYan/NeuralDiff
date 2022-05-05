@@ -15,6 +15,8 @@ import opt
 import train
 from dataset import EPICDiff
 from evaluation.utils import tqdm
+from pathlib import Path
+import json
 
 
 def set_deterministic():
@@ -125,5 +127,29 @@ def init_model(ckpt_path, dataset):
             model.embedding_a.weight.data[i] = model.embedding_a.weight.data[
                 i_train
             ]
+
+
+    # # hack! remove this in the future
+    # max_len = np.max(dataset.img_ids_test + dataset.img_ids_val + dataset.img_ids_train) + 1
+    # new_embedding_a_weight = torch.zeros([max_len, model.embedding_a.weight.data.shape[1]])
+
+    # with (Path(dataset.root) / 'meta.json').open('r') as f:
+    #     meta_json = json.load(f)
+    # if "time_ids" in meta_json:
+    #     for i in dataset.img_ids_test:
+    #         g_test[i] = meta_json["time_ids"][str(i)]
+    #     for i in dataset.img_ids_val:
+    #         g_val[i] = meta_json["time_ids"][str(i)]
+
+    # for g in [g_test, g_val]:
+    #     for i, i_train in g.items():
+    #         new_embedding_a_weight[i] = model.embedding_a.weight.data[
+    #             i_train
+    #         ]
+    # model.embedding_a.weight.data = new_embedding_a_weight.to(model.embedding_a.weight.data.device)
+    #     # for i, i_train in g.items():
+    #     #     model.embedding_a.weight.data[i] = model.embedding_a.weight.data[
+    #     #         i_train
+    #     #     ]
 
     return model

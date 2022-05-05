@@ -86,7 +86,7 @@ def get_opts(vid=None, root="data/EPIC-Diff"):
     parser.add_argument(
         "--refresh_every",
         type=int,
-        default=1,
+        default=100,
         help="print the progress bar every X steps",
     )
     parser.add_argument("-f", type=str, default="", help="For Jupyter.")

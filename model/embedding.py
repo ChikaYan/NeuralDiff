@@ -38,5 +38,7 @@ class LREEmbedding(torch.nn.Module):
         self.P = self.embedding(self.input_range).cuda()
 
     def __call__(self, indices):
+        if self.P.device != self.W.device:
+            self.P = self.P.to(self.W.device)
         L = self.P @ self.W
         return L[indices]

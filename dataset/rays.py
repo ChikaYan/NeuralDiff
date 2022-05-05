@@ -86,7 +86,10 @@ class EPICDiff(Dataset):
         c2c[:3, :3] = torch.eye(3, 3).to(c2w.device)
         rays_o_c, rays_d_c = get_rays(directions, c2c)
 
-        rays_t = idx * torch.ones(len(rays_o), 1).long()
+        if self.time_ids is not None:
+            rays_t = self.time_ids[str(idx)] * torch.ones(len(rays_o), 1).long()
+        else:
+            rays_t = idx * torch.ones(len(rays_o), 1).long()
 
         rays = torch.cat(
             [
@@ -119,6 +122,7 @@ class EPICDiff(Dataset):
         self.fars = meta["fars"]
         self.image_paths = meta["images"]
         self.K = meta["intrinsics"]
+        self.time_ids = meta["time_ids"] if "time_ids" in meta else None
 
         if self.split == "train":
             # create buffer of all rays and rgb data

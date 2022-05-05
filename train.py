@@ -20,7 +20,7 @@ from utils import *
 class NeuralDiffSystem(pytorch_lightning.LightningModule):
     def __init__(self, hparams, train_dataset=None, val_dataset=None):
         super().__init__()
-        self.hparams = hparams
+        self.save_hyperparameters(hparams)
         if self.hparams.deterministic:
             utils.set_deterministic()
 
@@ -238,14 +238,13 @@ class NeuralDiffSystem(pytorch_lightning.LightningModule):
 
 
 def init_trainer(hparams, logger=None, checkpoint_callback=None):
-    if checkpoint_callback is None:
-        checkpoint_callback = pytorch_lightning.callbacks.ModelCheckpoint(
-            filepath=os.path.join(f"ckpts/{hparams.exp_name}", "{epoch:d}"),
-            monitor="val/psnr",
-            mode="max",
-            save_top_k=-1,
-        )
-
+    checkpoint_callback = pytorch_lightning.callbacks.ModelCheckpoint(
+        dirpath=f"ckpts/{hparams.exp_name}",
+        filename="{epoch}",
+        verbose=True,
+        save_top_k=1,
+        save_last=True,
+    )
     logger = pytorch_lightning.loggers.TestTubeLogger(
         save_dir="logs",
         name=hparams.exp_name,
@@ -256,7 +255,8 @@ def init_trainer(hparams, logger=None, checkpoint_callback=None):
 
     trainer = pytorch_lightning.Trainer(
         max_epochs=hparams.num_epochs,
-        checkpoint_callback=checkpoint_callback,
+        # checkpoint_callback=checkpoint_callback,
+        enable_checkpointing=True,
         resume_from_checkpoint=hparams.ckpt_path,
         logger=logger,
         weights_summary=None,
@@ -267,6 +267,7 @@ def init_trainer(hparams, logger=None, checkpoint_callback=None):
         benchmark=True,
         limit_train_batches=hparams.train_ratio,
         profiler="simple" if hparams.num_gpus == 1 else None,
+        callbacks=[checkpoint_callback],
     )
 
     return trainer
