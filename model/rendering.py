@@ -260,6 +260,11 @@ def render_rays(
                 "n1 n2 c -> n1 c",
                 "sum",
             )
+
+            transient_rgb_map_white = transient_rgb_map + 1-rearrange(reduce(transient_weights, 'n1 n2 -> n1', 'sum'), 'n -> n 1')
+            results["transient_rgb_map_white"] = transient_rgb_map_white
+
+
             results["beta"] = reduce(
                 transient_weights * transient_betas, "n1 n2 -> n1", "sum"
             )

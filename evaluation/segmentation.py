@@ -79,6 +79,7 @@ def evaluate_sample(
     beta = ds.x2im(results["beta"])
     img_pred_static = ds.x2im(results["rgb_fine_static"][:, :3], type_="pt")
     img_pred_transient = ds.x2im(results["_rgb_fine_transient"][:, :3])
+    img_pred_transient_white = ds.x2im(results["transient_rgb_map_white"][:, :3])
     if output_person:
         img_pred_person = ds.x2im(results["_rgb_fine_person"][:, :3])
 
@@ -152,6 +153,7 @@ def evaluate_sample(
 
     results["figure"] = figure
     results["im_tran"] = img_pred_transient
+    results["im_tran_white"] = img_pred_transient_white
     results["im_stat"] = img_pred_static
     results["im_pred"] = img_pred
     results["im_targ"] = img_gt
@@ -252,7 +254,7 @@ def evaluate(
         )
 
         # save_tags = ['figure', 'im_tran', 'im_stat', 'im_pred', 'im_targ', 'mask_pred', 'mask_stat', 'mask_pers', 'im_pers', 'mask_tran']
-        save_tags = ['figure', 'im_stat', 'mask_pred', 'im_pred', 'im_tran']  # 'im_depth', 'im_depth_static'] #, 'im_stat', 'im_pred', 'mask_pred']
+        save_tags = ['figure', 'im_stat', 'mask_pred', 'im_pred', 'im_tran_white']  # 'im_depth', 'im_depth_static'] #, 'im_stat', 'im_pred', 'mask_pred']
 
         if save and do_visualise:
             for save_tag in save_tags:
