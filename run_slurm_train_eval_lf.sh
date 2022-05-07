@@ -22,7 +22,7 @@
 #! Note that the job submission script will enforce no more than 3 cpus per GPU.
 #SBATCH --gres=gpu:4
 #! How much wallclock time will be required?
-#SBATCH --time=5:00:00
+#SBATCH --time=10:00:00
 #! What types of email messages do you wish to receive?
 #SBATCH --mail-type=ALL
 #! Uncomment this to prevent the job from being requeued (e.g. if
@@ -107,7 +107,25 @@ echo "Current directory: `pwd`"
 
 echo -e "\nnumtasks=$numtasks, numnodes=$numnodes, mpi_tasks_per_node=$mpi_tasks_per_node (OMP_NUM_THREADS=$OMP_NUM_THREADS)"
 
-VID="broom-vcam"; 
+# VID="broom-vcam" # done
+# VID="vrig-3dprinter-vcam"
+# VID="vrig-chicken-vcam"
+# VID="vrig-peel-banana-vcam" # 500 train!
+
+# VID="vrig_pick_drop" 
+# VID="vrig_duck_jump_slow"
+VID="balloon_wave_crop" # 600, others 1100
+# VID="vrig_water_pour"
+# VID="cookie"
+# VID="dog_toy_show"
+
+
+# VID="camera_shadow_v2"
+# VID="hand_shadow_new"
+# VID="shadow_car"
+# VID="curls"
+
+
 EXP_NAME="no_actor"
 CKP=ckpts/rel
 EXP=rel
@@ -117,11 +135,12 @@ echo $VID
 echo $EXP_NAME
 echo ====================
 
+# 1100 \
 
 python train.py \
   --vid $VID \
   --exp_name rel/$VID/$EXP_NAME \
-  --train_ratio 1 --num_epochs 50 --N_vocab 400 \
+  --train_ratio 1 --num_epochs 30 --N_vocab 600 \
   --num_gpus 4 --num_workers 0  --suppress_person
 
 python evaluate.py \

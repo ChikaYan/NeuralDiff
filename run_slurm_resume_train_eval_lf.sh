@@ -20,9 +20,9 @@
 #SBATCH --ntasks=1
 #! Specify the number of GPUs per node (between 1 and 4; must be 4 if nodes>1).
 #! Note that the job submission script will enforce no more than 3 cpus per GPU.
-#SBATCH --gres=gpu:1
+#SBATCH --gres=gpu:4
 #! How much wallclock time will be required?
-#SBATCH --time=0:30:00
+#SBATCH --time=10:00:00
 #! What types of email messages do you wish to receive?
 #SBATCH --mail-type=ALL
 #! Uncomment this to prevent the job from being requeued (e.g. if
@@ -107,7 +107,25 @@ echo "Current directory: `pwd`"
 
 echo -e "\nnumtasks=$numtasks, numnodes=$numnodes, mpi_tasks_per_node=$mpi_tasks_per_node (OMP_NUM_THREADS=$OMP_NUM_THREADS)"
 
+
+# VID="my_hand_large_motion"
+# VID="hand_wave_v3"
+# VID="camera_shadow_v2"
+# VID="hand_shadow_new"
+# VID="shadow_car"
+
+# VID="broom-vcam"
+# VID="vrig-3dprinter-vcam"
+# VID="vrig-chicken-vcam"
 VID="vrig-peel-banana-vcam"
+
+# VID="vrig_pick_drop"
+# VID="vrig_duck_jump_slow"
+# VID="balloon_wave_crop"
+# VID="vrig_water_pour"
+# VID="cookie"
+# VID="dog_toy_show"
+
 EXP_NAME="no_actor"
 CKP=ckpts/rel
 EXP=rel
@@ -117,12 +135,20 @@ echo $VID
 echo $EXP_NAME
 echo ====================
 
+
+python train.py \
+  --vid $VID \
+  --exp_name rel/$VID/$EXP_NAME \
+  --train_ratio 1 --num_epochs 50 --N_vocab 400 \
+  --num_gpus 4 --num_workers 0  --suppress_person --ckpt_path $CKP\/$VID\/$EXP_NAME\/last.ckpt
+
 python evaluate.py \
   --path $CKP\/$VID\/$EXP_NAME\/last.ckpt \
-  --vid $VID --exp $EXP --exp_name no_actor_train \
+  --vid $VID --exp $EXP --exp_name $EXP_NAME\
   --is_eval_script \
   --outputs "masks" \
   --masks_n_samples 0 \
   --summary_n_samples 0 --suppress_person
 
-#! sbatch ./run_slurm_eval.sh 
+
+#! sbatch ./run_slurm_resume_train_eval_lf.sh 

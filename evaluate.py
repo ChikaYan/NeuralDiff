@@ -20,6 +20,20 @@ def parse_args(path=None, vid=None, exp=None):
     parser.add_argument("--exp_name", type=str, default='', help="Additional experiment name.")
 
     parser.add_argument(
+        "--load_test",
+        default=False,
+        action="store_true",
+        help="run novel_view tests",
+    )
+
+    # parser.add_argument(
+    #     "--freeze_time",
+    #     type=int,
+    #     default=None,
+    #     help="freeze time at given number",
+    # )
+
+    parser.add_argument(
         "--outputs",
         default=["masks"],
         type=str,
@@ -62,7 +76,7 @@ def parse_args(path=None, vid=None, exp=None):
 
 def init(args):
 
-    dataset = EPICDiff(args.vid, root=args.root_data)
+    dataset = EPICDiff(args.vid+'_test' if args.load_test else args.vid, root=args.root_data)
 
     model = utils.init_model(args.path, dataset)
 
@@ -97,6 +111,7 @@ def eval_masks(args, model, dataset, root):
         save=True,
         vid=args.vid,
         image_ids=image_ids,
+        # freeze_time=None
     )
 
 
@@ -117,9 +132,20 @@ def eval_masks_average(args):
 def render_video(args, model, dataset, root, save_cache=False):
     """Render a summary video like shown on the project page."""
     root = os.path.join(root, "summary")
-    os.makedirs(root)
+    os.makedirs(root, exist_ok=True)
 
-    sid = SAMPLE_IDS[args.vid]
+    if args.vid in SAMPLE_IDS:
+        sid = SAMPLE_IDS[args.vid]
+    else:
+        sid = 98
+
+    maskloader = MaskLoader(dataset=dataset)
+    image_ids = evaluation.utils.sample_linear(
+        dataset.img_ids_test, args.masks_n_samples
+    )[0]
+    mask, _ = maskloader[image_ids[0]]
+    dataset.img_w = mask.shape[1]
+    dataset.img_h = mask.shape[0]
 
     top = evaluation.video.render(
         dataset, model, n_images=args.summary_n_samples
@@ -140,7 +166,8 @@ def render_video(args, model, dataset, root, save_cache=False):
         for k in bot.keys()
     ]
 
-    utils.write_mp4(f"{root}/cat-{sid}-N{len(ims_cat)}", ims_cat)
+    # utils.write_mp4(f"{root}/cat-{sid}-N{len(ims_cat)}", ims_cat)
+    imageio.mimwrite(f"{root}/cat-{sid}-N{len(ims_cat)}.gif", ims_cat, "gif", fps=10)
 
 
 def run(args, model, dataset, root):
@@ -161,5 +188,5 @@ if __name__ == "__main__":
         eval_masks_average(args)
     else:
         model, dataset = init(args)
-        root = os.path.join("results", args.exp, args.vid, args.exp_name)
+        root = os.path.join("results", args.exp, args.vid+'_test' if args.load_test else args.vid, args.exp_name)
         run(args, model, dataset, root)
